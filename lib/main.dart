@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import './screens/products_overview_screen.dart';
+import 'screens/product_detail_screen.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -10,23 +13,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Shop',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.purple,
+        accentColor: Colors.deepOrange,
+        fontFamily: 'Lato',
       ),
-      home: ShopApp(title: 'Shop'),
+      home: ProductsOverviewScreen(),
+      routes: {
+        ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+      },
     );
   }
 }
 
-class ShopApp extends StatefulWidget {
-  ShopApp({Key? key, required this.title}) : super(key: key);
-  final String title;
-  @override
-  _ShopAppState createState() => _ShopAppState();
-}
+class ShopApp extends StatelessWidget {
+  const ShopApp({Key? key}) : super(key: key);
 
-class _ShopAppState extends State<ShopApp> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Container();
   }
 }

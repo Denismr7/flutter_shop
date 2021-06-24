@@ -35,6 +35,23 @@ class _EditProductScreenState extends State<EditProductScreen> {
   var urlRegex =
       r"(https?|ftp)://([-A-Z0-9.]+)(/[-A-Z0-9+&@#/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#/%=~_|!:‌​,.;]*)?";
 
+  Future<void> _showErrorDialog() {
+    return showDialog<Null>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Error ocurred'),
+        content: Text('Something went wrong'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: Text('Okay'))
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -90,38 +107,25 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _isLoading = true;
     });
     if (_editedProduct.id.isNotEmpty) {
-      Provider.of<Products>(context, listen: false)
-          .updateProduct(_editedProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop();
+      try {
+        await Provider.of<Products>(context, listen: false)
+            .updateProduct(_editedProduct);
+      } catch (error) {
+        await _showErrorDialog();
+      }
     } else {
       try {
         await Provider.of<Products>(context, listen: false)
             .addProduct(_editedProduct);
       } catch (error) {
-        await showDialog<Null>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('Error ocurred'),
-            content: Text('Something went wrong'),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                  },
-                  child: Text('Okay'))
-            ],
-          ),
-        );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
+        await _showErrorDialog();
       }
     }
+
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.of(context).pop();
   }
 
   @override

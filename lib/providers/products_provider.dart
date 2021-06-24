@@ -26,6 +26,9 @@ class Products with ChangeNotifier {
         'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/products.json');
     try {
       final response = await http.get(url);
+      if (response.body == 'null') {
+        return;
+      }
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
       extractedData.forEach((key, productData) {

@@ -21,14 +21,21 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
+  final String authToken;
+
+  Orders({this.authToken = "", orders});
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
+  set orders(List<OrderItem>? newOrders) {
+    _orders = newOrders ?? [];
+  }
+
   Future<void> fetchAndSetOrders() async {
     final url = Uri.parse(
-        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/orders.json');
+        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken');
     final response = await http.get(url);
     final List<OrderItem> loadedOrders = [];
     final extractedData = json.decode(response.body) as Map<String, dynamic>?;
@@ -59,7 +66,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final url = Uri.parse(
-        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/orders.json');
+        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken');
     try {
       final dateTime = DateTime.now();
       final response = await http.post(

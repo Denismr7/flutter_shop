@@ -9,8 +9,16 @@ import '../models/http_exception.dart';
 class Products with ChangeNotifier {
   List<Product> _items = [];
 
+  final String authToken;
+
+  Products({this.authToken = "", items});
+
   List<Product> get items {
     return [..._items];
+  }
+
+  set items(List<Product>? newItems) {
+    _items = newItems ?? [];
   }
 
   List<Product> get getFavorites {
@@ -23,7 +31,7 @@ class Products with ChangeNotifier {
 
   Future<void> fetchAndSetProducts() async {
     final url = Uri.parse(
-        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/products.json');
+        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken');
     try {
       final response = await http.get(url);
       if (response.body == 'null') {
@@ -50,7 +58,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     final url = Uri.parse(
-        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/products.json');
+        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/products.json?auth=$authToken');
     try {
       final response = await http.post(
         url,
@@ -83,7 +91,7 @@ class Products with ChangeNotifier {
       return;
     }
     final url = Uri.parse(
-        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/products/${product.id}.json');
+        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/products/${product.id}.json?auth=$authToken');
     try {
       await http.patch(url,
           body: json.encode({

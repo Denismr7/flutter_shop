@@ -13,6 +13,7 @@ import './screens/edit_product_screen.dart';
 import './screens/auth_screen.dart';
 import './providers/auth.dart';
 import './screens/products_overview_screen.dart';
+import './screens/splash_screen.dart';
 
 Future main() async {
   await dotenv.load();
@@ -55,7 +56,14 @@ class MyApp extends StatelessWidget {
               accentColor: Colors.deepOrange,
               fontFamily: 'Lato',
             ),
-            home: authConsumer.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+            home: authConsumer.isAuth
+                ? ProductsOverviewScreen()
+                : FutureBuilder(
+                    future: authConsumer.tryAutoLogin(),
+                    builder: (ctx, snapshot) =>
+                        snapshot.connectionState == ConnectionState.waiting
+                            ? SplashScreen()
+                            : AuthScreen()),
             routes: {
               ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
               CartScreen.routeName: (ctx) => CartScreen(),

@@ -28,11 +28,12 @@ class Product with ChangeNotifier {
     isFavorite = !isFavorite;
     notifyListeners();
     try {
-      final response = await http.put(url, body: json.encode({isFavorite}));
+      final response = await http.put(url, body: json.encode(isFavorite));
       if (response.statusCode >= 400) {
         throw HttpException('Something went wrong');
       }
-    } catch (_) {
+    } catch (e) {
+      print(e);
       isFavorite = oldStatus;
       notifyListeners();
     }

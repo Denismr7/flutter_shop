@@ -22,8 +22,9 @@ class OrderItem {
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
   final String authToken;
+  final String userId;
 
-  Orders({this.authToken = "", orders});
+  Orders({this.authToken = "", orders, this.userId = ""});
 
   List<OrderItem> get orders {
     return [..._orders];
@@ -35,7 +36,7 @@ class Orders with ChangeNotifier {
 
   Future<void> fetchAndSetOrders() async {
     final url = Uri.parse(
-        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken');
+        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$authToken');
     final response = await http.get(url);
     final List<OrderItem> loadedOrders = [];
     final extractedData = json.decode(response.body) as Map<String, dynamic>?;
@@ -49,11 +50,11 @@ class Orders with ChangeNotifier {
           amount: order['amount'],
           products: (order['products'] as List<dynamic>)
               .map(
-                (e) => CartItem(
-                    id: e['id'],
-                    title: e['title'],
-                    quantity: e['quantity'],
-                    price: e['price']),
+                (product) => CartItem(
+                    id: product['id'],
+                    title: product['title'],
+                    quantity: product['quantity'],
+                    price: product['price']),
               )
               .toList(),
           dateTime: DateTime.parse(order['dateTime']),
@@ -66,7 +67,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final url = Uri.parse(
-        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/orders.json?auth=$authToken');
+        'https://flutter-course-shop-c8bf6-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$authToken');
     try {
       final dateTime = DateTime.now();
       final response = await http.post(
@@ -74,11 +75,11 @@ class Orders with ChangeNotifier {
         body: json.encode({
           'amount': total,
           'products': cartProducts
-              .map((e) => {
-                    'id': e.id,
-                    'title': e.title,
-                    'quantity': e.quantity,
-                    'price': e.price
+              .map((product) => {
+                    'id': product.id,
+                    'title': product.title,
+                    'quantity': product.quantity,
+                    'price': product.price
                   })
               .toList(),
           'dateTime': dateTime.toIso8601String(),

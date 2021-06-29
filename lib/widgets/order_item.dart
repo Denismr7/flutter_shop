@@ -13,8 +13,24 @@ class OrderItem extends StatefulWidget {
   _OrderItemState createState() => _OrderItemState();
 }
 
-class _OrderItemState extends State<OrderItem> {
+class _OrderItemState extends State<OrderItem> with TickerProviderStateMixin {
   var _expanded = false;
+  AnimationController? _controller;
+  Animation<double>? _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(
+        milliseconds: 200,
+      ),
+    );
+    _opacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _controller!, curve: Curves.easeInExpo));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -30,15 +46,21 @@ class _OrderItemState extends State<OrderItem> {
               onPressed: () {
                 setState(() {
                   _expanded = !_expanded;
+                  _expanded ? _controller!.forward() : _controller!.reverse();
                 });
               },
               icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
             ),
           ),
-          if (_expanded)
-            Container(
+          FadeTransition(
+            opacity: _opacityAnimation!,
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 200),
+              curve: Curves.easeIn,
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-              height: min(widget.order.products.length * 20 + 10, 180),
+              height: _expanded
+                  ? min(widget.order.products.length * 20 + 10, 180)
+                  : 0,
               child: ListView(
                 children: widget.order.products
                     .map((prod) => Row(
@@ -62,7 +84,8 @@ class _OrderItemState extends State<OrderItem> {
                         ))
                     .toList(),
               ),
-            )
+            ),
+          )
         ],
       ),
     );

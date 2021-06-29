@@ -14,6 +14,7 @@ import './screens/auth_screen.dart';
 import './providers/auth.dart';
 import './screens/products_overview_screen.dart';
 import './screens/splash_screen.dart';
+import 'helpers/custom_route.dart';
 
 Future main() async {
   await dotenv.load();
@@ -52,10 +53,13 @@ class MyApp extends StatelessWidget {
           builder: (ctx, authConsumer, _) => MaterialApp(
             title: 'Shop',
             theme: ThemeData(
-              primarySwatch: Colors.purple,
-              accentColor: Colors.deepOrange,
-              fontFamily: 'Lato',
-            ),
+                primarySwatch: Colors.purple,
+                accentColor: Colors.deepOrange,
+                fontFamily: 'Lato',
+                pageTransitionsTheme: PageTransitionsTheme(builders: {
+                  TargetPlatform.android: CustomPageTransitionBuilder(),
+                  TargetPlatform.iOS: CustomPageTransitionBuilder(),
+                })),
             home: authConsumer.isAuth
                 ? ProductsOverviewScreen()
                 : FutureBuilder(
